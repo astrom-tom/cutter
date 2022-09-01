@@ -1,0 +1,13 @@
+README.md
+setup.py
+cutter/GUI.py
+cutter/__info__.py
+cutter/__init__.py
+cutter/__main__.py
+cutter/cli.py
+cutter.egg-info/PKG-INFO
+cutter.egg-info/SOURCES.txt
+cutter.egg-info/dependency_links.txt
+cutter.egg-info/entry_points.txt
+cutter.egg-info/requires.txt
+cutter.egg-info/top_level.txt

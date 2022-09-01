@@ -1,0 +1,3 @@
+[gui_scripts]
+cutter = cutter.__main__:main
+
