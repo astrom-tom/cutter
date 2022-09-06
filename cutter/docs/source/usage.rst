@@ -4,8 +4,8 @@
    contain the root `toctree` directive.
 .. _usage:
 
-|python| |Python36|  |Licence|
-|matplotlib| |PyQt5| |numpy| |scipy| 
+|python| |Python39| |Licence|
+|matplotlib| |PyQt5| |numpy| 
 
 .. |Licence| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
       :target: http://perso.crans.org/besson/LICENSE.html
@@ -22,18 +22,14 @@
 .. |matplotlib| image:: https://img.shields.io/badge/poweredby-matplotlib-orange.svg
    :target: https://matplotlib.org/
 
-.. |Python36| image:: https://img.shields.io/badge/python-3.6-blue.svg
-.. _Python36: https://www.python.org/downloads/release/python-360/
+.. |Python39| image:: https://img.shields.io/badge/python-3.9%20-blue.svg
+.. _Python39: https://www.python.org/downloads/release/python-360/
 
 .. |numpy| image:: https://img.shields.io/badge/poweredby-numpy-orange.svg
    :target: http://www.numpy.org/
 
-.. |scipy| image:: https://img.shields.io/badge/poweredby-scipy-orange.svg
-   :target: https://www.scipy.org/
 
-
-
-Using Photon
+Using Cutter
 ------------
 ------------
 
@@ -41,7 +37,7 @@ Using Photon
 
 Installation
 ~~~~~~~~~~~~
-For the moment, the only way to use Photon is to download the source code from the Github repository (https://github.com/astrom-tom/Photon - using the 'clone or download' button and download as zip). To make it work you have to use python 3.6 with the following library and versions:
+For the moment, the only way to use Photon is to download the source code from the Github repository (https://github.com/astrom-tom/cutter - using the 'clone or download' button and download as zip). To make it work you have to use python 3.9 with the following library and versions:
 
 * PyQt5 v5.10.1: The is for the graphical interface
 * Matplotlib v2.2.2: This is for the plotting area. 

@@ -4,8 +4,8 @@
    contain the root `toctree` directive.
 .. _usage:
 
-|python| |Python36|  |Licence|
-|matplotlib| |PyQt5| |numpy| |scipy| 
+|python| |Python39| |Licence|
+|matplotlib| |PyQt5| |numpy| 
 
 .. |Licence| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
       :target: http://perso.crans.org/besson/LICENSE.html
@@ -22,18 +22,14 @@
 .. |matplotlib| image:: https://img.shields.io/badge/poweredby-matplotlib-orange.svg
    :target: https://matplotlib.org/
 
-.. |Python36| image:: https://img.shields.io/badge/python-3.6-blue.svg
-.. _Python36: https://www.python.org/downloads/release/python-360/
+.. |Python39| image:: https://img.shields.io/badge/python-3.9%20-blue.svg
+.. _Python39: https://www.python.org/downloads/release/python-360/
 
 .. |numpy| image:: https://img.shields.io/badge/poweredby-numpy-orange.svg
    :target: http://www.numpy.org/
 
-.. |scipy| image:: https://img.shields.io/badge/poweredby-scipy-orange.svg
-   :target: https://www.scipy.org/
 
-
-
-Using Photon
+Using Cutter
 ------------
 ------------
 

@@ -13,30 +13,32 @@
 ###########################
 @License: GPL - see LICENCE.txt
 '''
-####Public General Libraries
-import warnings
+##Standard library
 import os
+import warnings
 from functools import partial
-from astropy.io import fits
+
+####Public General Libraries
 import numpy
+from astropy.io import fits
 from catscii import catscii
-
-######Qt5
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QGridLayout, QWidget, \
-        QTabWidget, QTabWidget, QLineEdit, QInputDialog, \
-        QHBoxLayout, QPushButton, QFileDialog,\
-        QSplitter, QShortcut, QTableWidget,QAbstractItemView,\
-        QTableWidgetItem, QLabel
-
-###matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.colors as col
 import matplotlib
-import matplotlib.pyplot as plt
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QGridLayout, QWidget, \
+        QTabWidget, QLineEdit, QHBoxLayout, QPushButton, QFileDialog,\
+        QSplitter, QShortcut, QTableWidget, QAbstractItemView,\
+        QTableWidgetItem, QLabel
+
+####local imports
+from . import __info__
+
+
+
+###Ignore some matplotlib warnings
 warnings.simplefilter(action='ignore', category=matplotlib.mplDeprecation)
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -44,9 +46,6 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 matplotlib.rcParams['savefig.dpi'] = 300
 matplotlib.rcParams['savefig.directory'] = ''
 matplotlib.rcParams['savefig.format'] = 'eps'
-
-####local imports
-from . import __info__
 
 
 #####################FONT QT4, size and bold
@@ -56,6 +55,9 @@ myFont.setPointSize(9)
 #######################################################################################
 
 class Main_window(QWidget):
+    '''
+    This codes the main window of cutter
+    '''
 
     def __init__(self, cli_args):
         '''
@@ -86,7 +88,7 @@ class Main_window(QWidget):
         grid = QGridLayout()
         grid_p = QWidget()
         grid_p.setLayout(grid)
-            
+
         hbox.addWidget(split)
         self.setLayout(hbox)
 
@@ -109,7 +111,7 @@ class Main_window(QWidget):
         self.win.mpl_connect('button_press_event', self.get_limits)
         self.toolbar = NavigationToolbar(self.win, self.win)
         grid.addWidget(self.win, 0, 0, 1, 4)
-        grid.addWidget(self.toolbar, 1, 0, 1, 4) 
+        grid.addWidget(self.toolbar, 1, 0, 1, 4)
         self.plot = self.figure.add_subplot(111)
         self.plot.set_ylabel(r'Flux density erg/s/cm$^2$/$\mathrm{\AA}$')
         self.plot.set_xlabel(r'Wavelength [$\mathrm{\AA}$]')
@@ -129,7 +131,6 @@ class Main_window(QWidget):
         self.orig_folder.setFixedWidth(320)
         grid.addWidget(self.orig_folder, 3, 1, 1, 1)
 
- 
         destination = QPushButton('Destination folder')
         grid.addWidget(destination, 4, 0, 1, 1)
         self.dest_folder = QLineEdit()
@@ -138,7 +139,6 @@ class Main_window(QWidget):
         ##temp
         self.dest_folder.setText('/home/romain/GITHUB/cutter/cutter/test/cut_test')
         self.saved_directory = '/home/romain/GITHUB/cutter/cutter/test/cut_test'
-        
 
         ##search
         search_label = QLabel('Search table:')
@@ -149,7 +149,7 @@ class Main_window(QWidget):
 
         check_cut = QPushButton('Check')
         grid.addWidget(check_cut, 4, 2, 1, 1)
- 
+
         ##limits for cutting
         x1 = QLabel('X low:')
         grid.addWidget(x1, 5, 0, 1, 1)
@@ -175,13 +175,14 @@ class Main_window(QWidget):
         self.table = QTableWidget()
         self.table.setRowCount(100)
         self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(['Spectrum', 'Noise Spectrum', 'redshift', 'Already Cut'])
+        self.table.setHorizontalHeaderLabels(['Spectrum', 'Noise Spectrum',
+                                              'redshift', 'Already Cut'])
         self.table.resizeColumnsToContents()
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.properties.addWidget(self.table, 0, 0, 3, 3)
         self.table.doubleClicked.connect(self.onDoubleClick)
-    
+
         ###put everything in the split
         split.addWidget(grid_p)
         split.addWidget(self.table)
@@ -230,7 +231,7 @@ class Main_window(QWidget):
             self.counter_table = self.length_table-1
         else:
             self.counter_table -= 1
- 
+
         self.table.selectRow(self.counter_table)
         self.onDoubleClick()
 
@@ -252,8 +253,8 @@ class Main_window(QWidget):
         '''
         if hasattr(self, 'wave'):
             spec_name, extension = os.path.splitext(self.spectrum_path)
+            del extension
             spec_name = spec_name.split('/')[-1]
-            ascii_spec = os.path.join(self.saved_directory, spec_name+'.ascii')
             cut_spec = os.path.join(self.saved_directory, spec_name+'_cut.ascii')
             numpy.savetxt(cut_spec, numpy.array([self.cutx, self.cuty, self.cuty_noise]).T)
 
@@ -276,7 +277,7 @@ class Main_window(QWidget):
         This methods set up the search algorithm
         '''
         ###get the text from the search box
-        get_text = self.search_str.text() 
+        get_text = self.search_str.text()
         ###find ALL the item containing the search string
         items = self.table.findItems(get_text, QtCore.Qt.MatchContains)
 
@@ -292,7 +293,7 @@ class Main_window(QWidget):
                 #If the search isn't the same, update searchInd to start with first item
                 self.searchInd = 0
             #Go to the current searchInd index of the items, and highlight the row
-            self.table.selectRow(items[self.searchInd].row()) 
+            self.table.selectRow(items[self.searchInd].row())
             #Update the previous search text
             self.previousSearch = self.search_str.text()
             ##display it
@@ -310,6 +311,7 @@ class Main_window(QWidget):
         for i in range(self.table.rowCount()):
             spec = self.table.item(i, 0).text()
             spec_name, extension = os.path.splitext(spec)
+            del extension
 
             ##name of the cut spec name
             cut_name = os.path.join(self.saved_directory, spec_name + '_cut.ascii')
@@ -325,7 +327,7 @@ class Main_window(QWidget):
     def table_setup(self):
         '''
         This method fill the table based on the
-        file fiven in arguments 
+        file fiven in arguments
         '''
 
         ##check if the file exist
@@ -420,10 +422,10 @@ class Main_window(QWidget):
         ##open it and display it
         if os.path.isfile(self.spectrum_path):
             self.open_spec_and_display(self.spectrum_path, self.noise_spectrum_path)
- 
 
         ##check if a cut spectrum is there, if yes display it
         spec_name, extension = os.path.splitext(spectrum)
+        del extension
         cut_name = os.path.join(self.saved_directory, spec_name + '_cut.ascii')
         if os.path.isfile(cut_name):
             cut_spec = catscii.load_cat(cut_name, False)
@@ -437,8 +439,8 @@ class Main_window(QWidget):
             self.x2.setText(str(max(self.cutx)))
             self.x1.setStyleSheet("color: red")
             self.x2.setStyleSheet("color: red")
- 
-        #recheck table to update the cut column   
+
+        #recheck table to update the cut column
         self.check_cut()
 
     def cut_spectrum(self, spectrum):
@@ -465,7 +467,6 @@ class Main_window(QWidget):
             cut = self.plot.plot(self.cutx, self.cuty, color='r', lw='0.7')
             self.win.draw()
             self.cut_spectrum_plots.append(cut[0])
-            
 
 
     def open_spec_and_display(self, path_to_spec, path_to_spec_noise):
@@ -493,7 +494,7 @@ class Main_window(QWidget):
         dl = float(header['CDELT1'])
         self.wave = numpy.linspace(l0, l0+N*dl, num=N)
 
-        ##flux 
+        ##flux
         self.flux = spec[0].data
         self.noise = spec_noise[0].data
         if isinstance(self.noise[0], numpy.ndarray):
@@ -511,12 +512,10 @@ class Main_window(QWidget):
         self.plot.set_ylim(min(self.flux), max(self.flux))
         hor_line = self.plot.axhline(0, ls='--', color='k', lw=0.5)
         self.plot.title.set_text(path_to_spec.split('/')[-1])
-        
-        ###save it 
+
+        ###save it
         self.displayed.append(plot[0])
         self.displayed.append(hor_line)
 
         self.figure.tight_layout()
         self.win.draw()
-        
-        

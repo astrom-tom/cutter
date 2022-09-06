@@ -13,10 +13,6 @@
 
 ###import libraries
 import sys
-import os
-from subprocess import call
-import socket
-
 
 ##third parties
 from PyQt5.QtWidgets import QApplication
@@ -30,13 +26,13 @@ def main():
     '''
     This is the main function of the code.
     if loads the command line interface and depending
-    on the options specified by the user, start the 
+    on the options specified by the user, start the
     main window.
     '''
     ###load the command line interface
     args = cli.CLI().arguments
 
-    if args.version == True:
+    if args.version is True:
         print('version %s'%info.__version__)
         sys.exit()
 
@@ -44,24 +40,24 @@ def main():
     print('\n\t\t\tcutter V%s'%info.__version__)
     print('\t\t        R. Thomas -2022-')
 
-    if args.file == None:
+    if args.file is None:
         print('\n\t No file configuration given...exiting cutter...\n\
                Try cutter --help to look at the options\n')
     #    sys.exit()
 
-    if args.file != None:
+    if args.file is not None:
         print('\n\t Load file: %s\n'%args.file)
 
     ###Construct a QAppp
     app = QApplication(sys.argv)
 
-    if args.width != None:
-        win = GUI.Main_window(args)    
+    if args.width is not None:
+        win = GUI.Main_window(args)
         win.resize(args.width, 1030)
 
-    if args.width == None:
+    if args.width is None:
         args.width = 780
-        win = GUI.Main_window(args)    
+        win = GUI.Main_window(args)
         win.resize(args.width, 1030)
 
     sys.exit(app.exec_())

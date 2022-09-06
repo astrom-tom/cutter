@@ -1,10 +1,9 @@
 '''
-
-cutter 
+cutter
 ------
 File: cli.py
 
-This file configures the Command line interface 
+This file configures the Command line interface
 
 @author: R. THOMAS
 @year: 2022
@@ -38,12 +37,10 @@ class CLI:
 
         parser.add_argument("-f", '--file', help="Your catalog of data to visualize, \
                 this is mandatory, this is mandatory if you do not use -p option")
-        parser.add_argument("-d", "--dire", type = str, help="Directory where the original spectra are located")
+        parser.add_argument("-d", "--dire", type = str,
+                            help="Directory where the original spectra are located")
         parser.add_argument("-w", "--width", type = int, help="Width of the GUI, default = 780")
         parser.add_argument("--version", action = "store_true", help="display version of photon")
-        
 
         ##### GET the Arguments for SPARTAN startup
         self.arguments = parser.parse_args()
-
-
