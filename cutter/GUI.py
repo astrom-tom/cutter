@@ -136,8 +136,8 @@ class Main_window(QWidget):
         self.dest_folder.setFixedWidth(320)
         grid.addWidget(self.dest_folder, 4, 1, 1, 1)
         ##temp
-        self.dest_folder.setText('/home/romain/GITHUB/spectra_cutting/cutter/test/cut_folder')
-        self.saved_directory = '/home/romain/GITHUB/spectra_cutting/cutter/test/cut_folder'
+        self.dest_folder.setText('/home/romain/GITHUB/cutter/cutter/test/cut_test')
+        self.saved_directory = '/home/romain/GITHUB/cutter/cutter/test/cut_test'
         
 
         ##search
@@ -174,8 +174,8 @@ class Main_window(QWidget):
         self.properties = QGridLayout()
         self.table = QTableWidget()
         self.table.setRowCount(100)
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(['Spectrum', 'Noise Spectrum', 'Already Cut'])
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(['Spectrum', 'Noise Spectrum', 'redshift', 'Already Cut'])
         self.table.resizeColumnsToContents()
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -208,6 +208,7 @@ class Main_window(QWidget):
         check_cut.clicked.connect(self.check_cut)
         prev_spec.clicked.connect(self.prev_spec)
         next_spec.clicked.connect(self.next_spec)
+        save_spec.clicked.connect(self.save_spec)
         self.search_str.returnPressed.connect(self.search)
 
         #logo
@@ -249,14 +250,12 @@ class Main_window(QWidget):
         '''
         Save the cut spectrum along the normal spectrum
         '''
-
         if hasattr(self, 'wave'):
             spec_name, extension = os.path.splitext(self.spectrum_path)
             spec_name = spec_name.split('/')[-1]
             ascii_spec = os.path.join(self.saved_directory, spec_name+'.ascii')
             cut_spec = os.path.join(self.saved_directory, spec_name+'_cut.ascii')
-
-            numpy.savetxt(cut_spec, numpy.array([self.cutx, self.cuty, self.cuty]).T)
+            numpy.savetxt(cut_spec, numpy.array([self.cutx, self.cuty, self.cuty_noise]).T)
 
     def dialog_folder(self, type_folder):
         '''
@@ -274,24 +273,24 @@ class Main_window(QWidget):
 
     def search(self):
         '''
+        This methods set up the search algorithm
         '''
+        ###get the text from the search box
         get_text = self.search_str.text() 
+        ###find ALL the item containing the search string
         items = self.table.findItems(get_text, QtCore.Qt.MatchContains)
 
         if items:
             #Check if the current search is the same as the previous
-            print(self.previousSearch, self.search_str.text())
             if self.previousSearch == self.search_str.text():
                 #If so, go to the next item in list (increment searchInd)
                 self.searchInd += 1
                 #If at end of list,, reset searchInd
                 if self.searchInd >= len(items):
                     self.searchInd = 0
-                print(self.searchInd)
             else:
                 #If the search isn't the same, update searchInd to start with first item
                 self.searchInd = 0
-                print('ok', )
             #Go to the current searchInd index of the items, and highlight the row
             self.table.selectRow(items[self.searchInd].row()) 
             #Update the previous search text
@@ -317,9 +316,11 @@ class Main_window(QWidget):
 
             ##check if that file exist
             if os.path.isfile(cut_name):
-                self.table.setItem(i, 2, QTableWidgetItem('Yes'))
+                self.table.setItem(i, 3, QTableWidgetItem('Yes'))
+                self.table.item(i,3).setBackground(QtGui.QColor(0,255,0))
             else:
-                self.table.setItem(i, 2, QTableWidgetItem('No'))
+                self.table.setItem(i, 3, QTableWidgetItem('No'))
+                self.table.item(i,3).setBackground(QtGui.QColor(255,0,0))
 
     def table_setup(self):
         '''
@@ -334,6 +335,7 @@ class Main_window(QWidget):
             cat = catscii.load_cat(self.args.file, False)
             spec = cat.get_column('Col1')
             noise = cat.get_column('Col2')
+            redshift = cat.get_column('Col3')
             self.length_table = len(spec)
 
             ##set up row number
@@ -343,6 +345,7 @@ class Main_window(QWidget):
             for i,spectrum in enumerate(spec):
                 self.table.setItem(i, 0, QTableWidgetItem(spectrum))
                 self.table.setItem(i, 1, QTableWidgetItem(noise[i]))
+                self.table.setItem(i, 2, QTableWidgetItem(redshift[i]))
 
             ###adjust column width
             self.table.resizeColumnsToContents()
@@ -424,17 +427,19 @@ class Main_window(QWidget):
         cut_name = os.path.join(self.saved_directory, spec_name + '_cut.ascii')
         if os.path.isfile(cut_name):
             cut_spec = catscii.load_cat(cut_name, False)
-            cut_x = cut_spec.get_column('Col1', float)
-            cut_y = cut_spec.get_column('Col2', float)
-            cut = self.plot.plot(cut_x, cut_y, color='r', lw='0.7')
+            self.cutx = cut_spec.get_column('Col1', float)
+            self.cuty = cut_spec.get_column('Col2', float)
+            self.cuty_noise = cut_spec.get_column('Col3', float)
+            cut = self.plot.plot(self.cutx, self.cuty, color='r', lw='0.7')
             self.win.draw()
             self.cut_spectrum_plots.append(cut[0])
-            self.x1.setText(str(min(cut_x)))
-            self.x2.setText(str(max(cut_x)))
+            self.x1.setText(str(min(self.cutx)))
+            self.x2.setText(str(max(self.cutx)))
             self.x1.setStyleSheet("color: red")
             self.x2.setStyleSheet("color: red")
  
-           
+        #recheck table to update the cut column   
+        self.check_cut()
 
     def cut_spectrum(self, spectrum):
         '''
